@@ -1,0 +1,225 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.weatherApp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 30px;
+  width: 500px;
+  height: 600px;
+  /* background: rgb(102, 158, 175); */
+  background: linear-gradient(
+    164deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(102, 158, 175, 1) 46%,
+    rgba(23, 71, 80, 1) 100%
+  );
+  border-radius: 10px;
+  margin-top: 5%;
+}
+.innerContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: -5px;
+}
+.label {
+  color: whitesmoke;
+  width: 80%;
+  margin: 0 auto 0 auto;
+}
+.search {
+  width: 80%;
+  height: 40px;
+  border-radius: 2px;
+  background: white;
+  margin: 4px auto 4px auto;
+}
+.city {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  color: rgb(224, 221, 221);
+  text-transform: uppercase;
+  width: 70%;
+  height: 35px;
+  background-color: #669eaf;
+  margin: 0 auto 10px auto;
+  border-radius: 2px;
+}
+.current {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.days {
+  border-radius: 2px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 70%;
+  color: white;
+  height: 35px;
+  background-color: #50b1b4;
+  margin: 10px auto 10px auto;
+}
+.current .wi-icon-802 {
+  color: white;
+  font-size: 100px;
+}
+.temp {
+  color: white;
+  font-size: 30px;
+  margin: 30px 0 20px 0;
+}
+.forecast {
+  width: 70%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 10px auto 10px auto;
+  color: white;
+}
+.forecast .wi {
+  font-size: 30px;
+  margin: 0 auto 0 auto;
+}
+.forecast p {
+  text-align: center;
+}
+
+/**!----------------  */
+
+.container {
+  padding: 32px;
+  width: 88%;
+  position: relative;
+}
+
+.select-box {
+  display: flex;
+  width: 400px;
+  margin: 0 auto 0 auto;
+  flex-direction: column;
+  position: relative;
+}
+
+.select-box .options-container {
+  background: rgb(34, 113, 133);
+  color: white;
+  max-height: 0;
+  width: 100%;
+  opacity: 0;
+  transition: all 0.4s;
+  border-radius: 8px;
+  overflow: hidden;
+  position: absolute;
+  top: 60%;
+  order: 1;
+}
+
+.select-box .options-container.active {
+  max-height: 200px;
+  opacity: 1;
+  overflow-y: scroll;
+  margin-top: 9px;
+}
+
+.select-box .options-container::-webkit-scrollbar {
+  width: 7px;
+  background: #669eaf;
+  border-radius: 0 8px 8px 0;
+}
+.select-box .options-container::-webkit-scrollbar-thumb {
+  background: #96b8c2;
+  border-radius: 0 8px 8px 0;
+}
+
+.select-box .option,
+.selected {
+  padding: 12px 24px;
+  cursor: pointer;
+}
+
+.select-box .option:hover {
+  background: rgb(48, 110, 139);
+}
+
+.select-box label {
+  cursor: pointer;
+}
+
+.select-box .option .radio {
+  display: none;
+}
+
+.selected {
+  height: 15px;
+  background: white;
+  color: #96b8c2;
+  border-radius: 3px;
+  margin-bottom: 8px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.selected::after {
+  content: "";
+  background: url("image/arrow.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  height: 100%;
+  width: 35px;
+}
+.arrow {
+  position: absolute;
+  right: 1px;
+  top: 10%;
+  transform: all 0.6s;
+}
+
+.select-box .options-container.active + .selected .arrow {
+  transform: rotateX(180deg);
+}
+
+/**!------------------------- */
+
+.search-box input {
+  margin: 0 auto 0 3px;
+  width: 79.5%;
+  height: 15px;
+  padding: 12px 16px;
+  font-size: 16px;
+  position: absolute;
+  top: 0%;
+  z-index: 10;
+  border: 0px solid rgb(197, 62, 62);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s;
+}
+.search-box input:focus {
+  outline: none;
+}
+
+.select-box .options-container.active ~ .search-box input {
+  pointer-events: auto;
+  opacity: 1;
+}

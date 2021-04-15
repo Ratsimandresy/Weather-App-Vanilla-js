@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Weather App</title>
+    <link
+      href="http://fonts.googleapis.com/css?family=Open+Sans:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="css/weathericons.css" />
+    <script src="index.js" type="module" />
+  </head>
+
+  <body>
+    <div class="main-container">
+      <div class="weatherApp">
+        <div class="innerContainer">
+          <div class="label">Sélectionner votre ville</div>
+          <div class="container">
+            <div class="select-box">
+              <div class="options-container">
+                <div class="option">
+                  <input type="radio" class="radio" name="city" id="cities" />
+                  <label for="cities">Cities</label>
+                </div>
+                <div class="option">
+                  <input type="radio" class="radio" name="city" id="cars" />
+                  <label for="cars">cars</label>
+                </div>
+                <div class="option">
+                  <input type="radio" class="radio" name="city" id="balls" />
+                  <label for="balls">balls</label>
+                </div>
+                <div class="option">
+                  <input type="radio" class="radio" name="city" id="forks" />
+                  <label for="forks">forks</label>
+                </div>
+                <div class="option">
+                  <input type="radio" class="radio" name="city" id="piks" />
+                  <label for="piks">piks</label>
+                </div>
+                <div class="option">
+                  <input type="radio" class="radio" name="city" id="books" />
+                  <label for="books">books</label>
+                </div>
+              </div>
+              <div class="selected">
+                <p class="selected-text">cliquez ici..</p>
+                <p>
+                  <svg
+                    class="arrow"
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="34px"
+                    width="34px"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </p>
+              </div>
+              <div class="search-box">
+                <input type="text" placeholder="tappez ici..." />
+              </div>
+            </div>
+          </div>
+
+          <div class="city">city</div>
+          <div class="current">
+            <div class="wi wi-icon-802"></div>
+            <div class="temp">2°</div>
+          </div>
+          <div class="days">
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+          </div>
+          <div class="forecast">
+            <div>
+              <div class="wi wi-icon-800"></div>
+              <p>4°</p>
+              <p>2°</p>
+            </div>
+            <div>
+              <div class="wi wi-icon-212"></div>
+              <p>4°</p>
+              <p>2°</p>
+            </div>
+            <div>
+              <div class="wi wi-icon-500"></div>
+              <p>4°</p>
+              <p>2°</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
