@@ -4,16 +4,24 @@ const optionsContainer = document.querySelector(".options-container");
 const optionsList = document.querySelectorAll(".option");
 const selectedText = document.querySelector(".selected-text");
 const searchBox = document.querySelector(".search-box input");
+const City = document.querySelector(".city");
+const temperature = document.querySelector(".temp span");
+const icon = document.querySelector(".currentWeatherIcon");
+const forecast = document.querySelector(".forecast");
+const days = document.querySelector(".days");
 
 console.log(optionsList);
 
 //** ADDING SOME EVENT LISTENER */
 selected.addEventListener("click", () => {
+  // fetchCities();
   optionsContainer.classList.toggle("active");
   //**allow the user to access immediately the input type field */
   if (optionsContainer.classList.contains("active")) {
     searchBox.focus();
     //**resetting the input */
+    forecast.innerHTML = "";
+    days.innerHTML = "";
     searchBox.value = "";
     filterList("");
   }
@@ -21,9 +29,15 @@ selected.addEventListener("click", () => {
 
 //**selecting the city  */
 optionsList.forEach((option) => {
-  option.addEventListener("click", () => {
-    selectedText.textContent = option.querySelector("label").textContent;
+  option.addEventListener("click", async () => {
+    const text = option.querySelector("label").textContent;
+    selectedText.textContent = text;
+    City.textContent = text;
+
     optionsContainer.classList.remove("active");
+
+    fetchCurrentWeather(text);
+    fetchForecast(text);
   });
 });
 
@@ -45,77 +59,118 @@ const filterList = (searchedWord) => {
 };
 
 //**FETCHING THE DATA */
-const fetchCities = async () => {
+// const fetchCities = async () => {
+//   try {
+//     const response1 = await fetch("/fewCities.json");
+//     const cities = response1.json();
+//     let response2 = await cities
+//       .then((res) => res)
+//       .catch((err) => console.log(err));
+//     console.log(response2);
+//     response2.forEach((city) => {
+//       const { id, nm } = city;
+//       return (optionsContainer.innerHTML += `
+//     <div class="option">
+//       <input type="radio" class="radio" name="city" id=${id} />
+//       <label for=${id}>${nm}</label>
+//   </div>
+//     `);
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+const fetchCurrentWeather = async (val) => {
   try {
-    const response1 = await fetch("/fewCities.json");
-    const cities = response1.json();
-    let response2 = await cities
+    const res1 = await fetch(
+      `http://api.openweathermap.org/data/2.5/weather?q=${val}&appid=cafd00df9787dfea7ce7af4c4aa0ddf7`
+    );
+
+    const res2 = await res1
+      .json()
       .then((res) => res)
       .catch((err) => console.log(err));
-    console.log(response2);
-    response2.forEach((city) => {
-      const { nm } = city;
-      return (optionsContainer.innerHTML += `
-    <div class="option">
-      <input type="radio" class="radio" name="city" id=${nm} />
-      <label for=${nm}>${nm}</label>
-  </div>
-    `);
-    });
-  } catch (error) {
-    console.log(error);
+    console.log({ res2 });
+    const temp = convertToDegree(res2["main"]["temp"]);
+    const weatherIcon = res2["weather"][0]["icon"];
+    console.log(weatherIcon);
+
+    return (temperature.textContent = temp);
+  } catch (err) {
+    console.log(err);
   }
 };
 
-const fetchCurrentWeather = async () => {
+const fetchForecast = async (val) => {
   try {
-    const response = await fetch(
-      "http://api.openweathermap.org/data/2.5/weather?q=Arcueil&appid=cafd00df9787dfea7ce7af4c4aa0ddf7"
+    const res1 = await fetch(
+      `http://api.openweathermap.org/data/2.5/forecast?q=${val}&appid=cafd00df9787dfea7ce7af4c4aa0ddf7`
     );
-    const currentWeather = response.json();
-    // console.log(currentWeather);
-    return getData(currentWeather);
-  } catch (error) {
-    console.log(error);
-  }
-};
 
-const fetchForecast = async () => {
-  try {
-    const response = await fetch(
-      "http://api.openweathermap.org/data/2.5/forecast?q=Arcueil&appid=cafd00df9787dfea7ce7af4c4aa0ddf7"
-    );
-    const forecast = response.json();
-    // console.log(forecast);
-    return getData(forecast);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-//** handle the promise return by these fetching functions above, thus returning the data needed */
-function getData(data) {
-  if (data) {
-    data
-      .then((res) => {
-        // console.log("HEREEEEEE IS RES", res);
-        return res;
-      })
+    const res2 = await res1
+      .json()
+      .then((res) => res)
       .catch((err) => console.log(err));
-  } else {
-    return alert("error from data fetching");
+    console.log([res2.list]);
+
+    const forecastArr = res2.list;
+    console.log("forecast hereee=>>>", forecastArr);
+
+    const fiveDaysForecast = getBy8(forecastArr);
+    console.log(fiveDaysForecast);
+
+    fiveDaysForecast.slice(0, 3).forEach((d, i) => {
+      const { temp_min, temp_max } = d.main;
+      const { dt_txt } = d;
+      console.log(dt_txt);
+      return (
+        (forecast.innerHTML += `
+    <div>
+        <div class="wi"></div>
+         <p><span>${convertToDegree(temp_max)}</span>°</p>
+         <p><span>${convertToDegree(temp_min)}</span>°</p>
+      </div>
+    `),
+        (days.innerHTML += `
+        <div>${getDay(dt_txt)}</div>
+        `)
+      );
+    });
+  } catch (err) {
+    console.log(err);
   }
-}
+};
 
-fetchCities();
-// fetchCurrentWeather();
-// console.log(fetchCurrentWeather())
-// fetchForecast();
-// console.log(fetchForecast())
+//** kelvin to degree */
 
-//**POPULATE THE OPTIONS WITH ALL THE CITIES */
+const convertToDegree = (t) => {
+  const result = Math.round(t - 273.15);
+  return result;
+};
+//**get day by name */
+const getDay = (day) => {
+  let d = new Date(day);
+  var weekday = new Array(7);
+  weekday[0] = "Sun";
+  weekday[1] = "Mon";
+  weekday[2] = "Tue";
+  weekday[3] = "Wed";
+  weekday[4] = "Thu";
+  weekday[5] = "Fri";
+  weekday[6] = "Sat";
 
-// const allCities = fetchCities();
-// allCities.forEach((city) => {
-//   console.log(city);
-// });
+  var n = weekday[d.getDay()];
+
+  return n;
+};
+//**get element every 8 index : 3h * 8 = 24h, forecast every 3hours */
+const getBy8 = (arr) => {
+  let array = [];
+  arr.map((el, i) => {
+    if (i % 8) return;
+    array.push(el);
+  });
+  console.log(array);
+  return array;
+};
