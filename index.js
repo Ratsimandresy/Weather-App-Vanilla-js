@@ -14,7 +14,6 @@ console.log(optionsList);
 
 //** ADDING SOME EVENT LISTENER */
 selected.addEventListener("click", () => {
-  // fetchCities();
   optionsContainer.classList.toggle("active");
   //**allow the user to access immediately the input type field */
   if (optionsContainer.classList.contains("active")) {
@@ -24,14 +23,15 @@ selected.addEventListener("click", () => {
     days.innerHTML = "";
     searchBox.value = "";
     filterList("");
+    fetchCities();
   }
 });
-
 //**selecting the city  */
 
 optionsList.forEach((option) => {
+  console.log("before clicking");
   option.firstElementChild.addEventListener("click", async () => {
-    console.log("ADD NEW LISTENER", option);
+    console.log("INPUT CLICKED");
     const text = option.querySelector("label").textContent;
     selectedText.textContent = text;
     City.textContent = text;
@@ -44,46 +44,49 @@ optionsList.forEach((option) => {
   });
 });
 
+//**FILTERING INPUT */
 searchBox.addEventListener("keyup", (event) => {
   filterList(event.target.value);
 });
 
 //**this function is going to filter for each character typed, to lower case making ot case insensitive */
-const filterList = (searchedWord) => {
-  searchedWord = searchedWord.toLowerCase();
+const filterList = (input) => {
+  input = input.toLowerCase();
   optionsList.forEach((option) => {
     //**targeting the label inside each options */
     let label = option.firstElementChild.nextElementSibling.innerText.toLowerCase();
-
-    label.indexOf(searchedWord) !== -1
+    console.log(label);
+    label.indexOf(input) !== -1
       ? (option.style.display = "block")
       : (option.style.display = "none");
   });
 };
 
 //**FETCHING THE DATA */
-// const fetchCities = async () => {
-//   try {
-//     const response = await fetch("/fewCities.json");
+const fetchCities = async () => {
+  console.log("fetching cities");
+  try {
+    const response = await fetch("/fewCities.json");
 
-//     let cities = await response
-//       .json()
-//       .then((res) => res)
-//       .catch((err) => console.log(err));
+    let cities = await response
+      .json()
+      .then((res) => res)
+      .catch((err) => console.log(err));
 
-//     cities.forEach((city) => {
-//       const { id, nm } = city;
-//       return (optionsContainer.innerHTML += `
-//     <div class="option">
-//       <input type="radio" class="radio" name="city" id=${id} />
-//       <label for=${id}>${nm}</label>
-//   </div>
-//     `);
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+    cities.forEach((city) => {
+      const { id, nm } = city;
+      return (optionsContainer.innerHTML += `
+    <div class="option">
+      <input type="radio" class="radio" name="city" id=${id} />
+      <label for=${id}>${nm}</label>
+  </div>
+    `);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // const fetchCities = async () => {
 //   try {
 //     const res1 = await loadCached("/cities-fr.json");

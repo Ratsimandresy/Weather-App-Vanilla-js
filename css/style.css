@@ -67,6 +67,9 @@ body {
   flex-direction: column;
   align-items: center;
 }
+.currentWeatherIcon {
+  height: 110px;
+}
 .days {
   border-radius: 2px;
   display: flex;
