@@ -225,10 +225,12 @@ const displayForecastInfo = async (val) => {
     const { list } = forecastInfo;
 
     const fiveDaysForecast = list.filter((el) => list.indexOf(el) % 8 == 1);
-
+    console.log(fiveDaysForecast);
     fiveDaysForecast.slice(0, 3).forEach((d) => {
       const { temp_min, temp_max } = d.main;
       const { dt_txt } = d;
+      const { icon } = d.weather;
+      console.log(icon);
 
       return (
         (days.innerHTML += ` <div>${getDay(dt_txt)}</div>`),
@@ -278,6 +280,12 @@ const getDay = (day) => {
 
   var n = weekday[d.getDay()];
   return n;
+};
+
+//**generate weather icons */
+const getIconURL = (code) => {
+  let URL = `http://openweathermap.org/img/wn/${code}@2x.png`;
+  return URL;
 };
 
 //**CACHE  */
