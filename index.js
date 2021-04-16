@@ -1,19 +1,18 @@
 //** SELECTING ALL THE ELEMENT NEEDED */
 const selected = document.querySelector(".selected");
 const optionsContainer = document.querySelector(".options-container");
-const optionsList = document.querySelectorAll(".option");
 const selectedText = document.querySelector(".selected-text");
-const searchBox = document.querySelector(".search-box input");
 const City = document.querySelector(".city");
 const temperature = document.querySelector(".temp span");
 const icon = document.querySelector(".currentWeatherIcon");
 const forecast = document.querySelector(".forecast");
 const days = document.querySelector(".days");
-
-console.log(optionsList);
+const optionsList = document.querySelectorAll(".option");
+const searchBox = document.querySelector(".search-box");
 
 //** ADDING SOME EVENT LISTENER */
 selected.addEventListener("click", () => {
+  // fetchCities();
   optionsContainer.classList.toggle("active");
   //**allow the user to access immediately the input type field */
   if (optionsContainer.classList.contains("active")) {
@@ -23,7 +22,6 @@ selected.addEventListener("click", () => {
     days.innerHTML = "";
     searchBox.value = "";
     filterList("");
-    fetchCities();
   }
 });
 //**selecting the city  */
@@ -63,48 +61,74 @@ const filterList = (input) => {
 };
 
 //**FETCHING THE DATA */
-const fetchCities = async () => {
-  console.log("fetching cities");
-  try {
-    const response = await fetch("/fewCities.json");
-
-    let cities = await response
-      .json()
-      .then((res) => res)
-      .catch((err) => console.log(err));
-
-    cities.forEach((city) => {
-      const { id, nm } = city;
-      return (optionsContainer.innerHTML += `
-    <div class="option">
-      <input type="radio" class="radio" name="city" id=${id} />
-      <label for=${id}>${nm}</label>
-  </div>
-    `);
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 // const fetchCities = async () => {
+//   console.log("fetching cities");
 //   try {
-//     const res1 = await loadCached("/cities-fr.json");
-//     const res2 = JSON.parse(res1);
+//     const response = await fetch("/fewCities.json");
 
-//     res2.forEach((city) => {
+//     let cities = await response
+//       .json()
+//       .then((res) => res)
+//       .catch((err) => console.log(err));
+
+//     cities.forEach((city) => {
 //       const { id, nm } = city;
 //       return (optionsContainer.innerHTML += `
-//           <div class="option">
-//             <input type="radio" class="radio" name="city" id=${id} />
-//             <label for=${id}>${nm}</label>
-//         </div>
-//           `);
+//     <div class="option">
+// <input type="radio" class="radio" name="city" id=${id} />
+// <label for=${id}>${nm}</label>
+//   </div>
+//     `);
 //     });
 //   } catch (error) {
 //     console.log(error);
 //   }
 // };
+
+//**!---------TEsT------------ */
+
+// let cities = [];
+
+// const fetchCities = () => {
+//   fetch("/fewCities.json")
+//     .then((res) => {
+//       res.json().then((res) => {
+//         cities = res;
+//         // console.log({ cities });
+//         showCities(cities);
+//       });
+//     })
+//     .catch((err) => console.log(err));
+// };
+
+// fetchCities();
+// document.addEventListener("DOMContentLoaded", fetchCities);
+
+// const showCities = (arr) => {
+//   let output = "";
+
+//   arr.forEach(({ id, nm }) => {
+//     output += `
+//       <div class="option">
+//               <input type="radio" class="radio" name="city" id=${id} />
+//                <label for=${id}>${nm}</label>
+//     </div>
+//       `;
+//   });
+//   optionsContainer.innerHTML = output;
+// };
+
+// searchBox.addEventListener("input", (e) => {
+//   const el = e.target.value.toLowerCase();
+//   console.log(cities);
+//   let newCity = cities.filter((city) => {
+//     city.nm.toLowerCase().includes(el);
+//   });
+//   console.log(newCity);
+//   showCities(newCity);
+// });
+
+//**!---------TEsT------------ */
 
 //**FETCHING CURRENT WEATHER */
 
