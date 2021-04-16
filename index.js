@@ -1,4 +1,4 @@
-//** SELCTING ALL THE ELEMENT NEEDED */
+//** SELECTING ALL THE ELEMENT NEEDED */
 const selected = document.querySelector(".selected");
 const optionsContainer = document.querySelector(".options-container");
 const optionsList = document.querySelectorAll(".option");
@@ -28,8 +28,10 @@ selected.addEventListener("click", () => {
 });
 
 //**selecting the city  */
+
 optionsList.forEach((option) => {
-  option.addEventListener("click", async () => {
+  option.firstElementChild.addEventListener("click", async () => {
+    console.log("ADD NEW LISTENER", option);
     const text = option.querySelector("label").textContent;
     selectedText.textContent = text;
     City.textContent = text;
@@ -37,7 +39,8 @@ optionsList.forEach((option) => {
     optionsContainer.classList.remove("active");
 
     fetchCurrentWeather(text);
-    fetchForecast(text);
+
+    displayInfo(text);
   });
 });
 
@@ -61,13 +64,14 @@ const filterList = (searchedWord) => {
 //**FETCHING THE DATA */
 // const fetchCities = async () => {
 //   try {
-//     const response1 = await fetch("/fewCities.json");
-//     const cities = response1.json();
-//     let response2 = await cities
+//     const response = await fetch("/fewCities.json");
+
+//     let cities = await response
+//       .json()
 //       .then((res) => res)
 //       .catch((err) => console.log(err));
-//     console.log(response2);
-//     response2.forEach((city) => {
+
+//     cities.forEach((city) => {
 //       const { id, nm } = city;
 //       return (optionsContainer.innerHTML += `
 //     <div class="option">
@@ -80,6 +84,26 @@ const filterList = (searchedWord) => {
 //     console.log(error);
 //   }
 // };
+// const fetchCities = async () => {
+//   try {
+//     const res1 = await loadCached("/cities-fr.json");
+//     const res2 = JSON.parse(res1);
+
+//     res2.forEach((city) => {
+//       const { id, nm } = city;
+//       return (optionsContainer.innerHTML += `
+//           <div class="option">
+//             <input type="radio" class="radio" name="city" id=${id} />
+//             <label for=${id}>${nm}</label>
+//         </div>
+//           `);
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+//**FETCHING CURRENT WEATHER */
 
 const fetchCurrentWeather = async (val) => {
   try {
@@ -91,63 +115,66 @@ const fetchCurrentWeather = async (val) => {
       .json()
       .then((res) => res)
       .catch((err) => console.log(err));
-    console.log({ res2 });
+    // console.log({ res2 });
+
     const temp = convertToDegree(res2["main"]["temp"]);
     const weatherIcon = res2["weather"][0]["icon"];
-    console.log(weatherIcon);
+    // const iconURL = `http://openweathermap.org/img/w/${weatherIcon}.png`;
+    // console.log(weatherIcon);
 
     return (temperature.textContent = temp);
+    // (icon.innerHTML = `<img src=${iconURL} alt="weather icon />`)
   } catch (err) {
     console.log(err);
   }
 };
 
-const fetchForecast = async (val) => {
-  try {
-    const res1 = await fetch(
-      `http://api.openweathermap.org/data/2.5/forecast?q=${val}&appid=cafd00df9787dfea7ce7af4c4aa0ddf7`
+//**FETCHING FORECAST */
+
+const displayInfo = async (val) => {
+  const forecastInfo = await fetchForecastInfo(val)
+    .then((res) => res)
+    .catch((err) => console.log(err));
+
+  const { list } = forecastInfo;
+
+  const fiveDaysForecast = list.filter((el) => list.indexOf(el) % 8 == 1);
+
+  fiveDaysForecast.slice(0, 3).forEach((d) => {
+    const { temp_min, temp_max } = d.main;
+    const { dt_txt } = d;
+
+    return (
+      (days.innerHTML += ` <div>${getDay(dt_txt)}</div>`),
+      (forecast.innerHTML += `         <div>
+    <div class="wi"></div>
+    <p><span>${convertToDegree(temp_max)}</span>°</p>
+     <p><span>${convertToDegree(temp_min)}</span>°</p>
+  </div>`)
     );
+  });
+};
 
-    const res2 = await res1
-      .json()
-      .then((res) => res)
+const fetchForecastInfo = async (val) => {
+  try {
+    const info = fetch(
+      `http://api.openweathermap.org/data/2.5/forecast?q=${val}&appid=cafd00df9787dfea7ce7af4c4aa0ddf7`
+    )
+      .then((res) => res.json())
       .catch((err) => console.log(err));
-    console.log([res2.list]);
 
-    const forecastArr = res2.list;
-    console.log("forecast hereee=>>>", forecastArr);
-
-    const fiveDaysForecast = getBy8(forecastArr);
-    console.log(fiveDaysForecast);
-
-    fiveDaysForecast.slice(0, 3).forEach((d, i) => {
-      const { temp_min, temp_max } = d.main;
-      const { dt_txt } = d;
-      console.log(dt_txt);
-      return (
-        (forecast.innerHTML += `
-    <div>
-        <div class="wi"></div>
-         <p><span>${convertToDegree(temp_max)}</span>°</p>
-         <p><span>${convertToDegree(temp_min)}</span>°</p>
-      </div>
-    `),
-        (days.innerHTML += `
-        <div>${getDay(dt_txt)}</div>
-        `)
-      );
-    });
+    return info;
   } catch (err) {
     console.log(err);
   }
 };
 
 //** kelvin to degree */
-
 const convertToDegree = (t) => {
   const result = Math.round(t - 273.15);
   return result;
 };
+
 //**get day by name */
 const getDay = (day) => {
   let d = new Date(day);
@@ -161,16 +188,21 @@ const getDay = (day) => {
   weekday[6] = "Sat";
 
   var n = weekday[d.getDay()];
-
   return n;
 };
-//**get element every 8 index : 3h * 8 = 24h, forecast every 3hours */
-const getBy8 = (arr) => {
-  let array = [];
-  arr.map((el, i) => {
-    if (i % 8) return;
-    array.push(el);
-  });
-  console.log(array);
-  return array;
-};
+
+//**CACHE  */
+
+function loadCached(url) {
+  let cache = loadCached.cache || (loadCached.cache = new Map());
+  let promise;
+
+  if (cache.has(url)) {
+    promise = cache.get(url);
+  } else {
+    promise = fetch(url);
+    cache.set(url, promise);
+  }
+
+  return promise.then((response) => response.text());
+}
