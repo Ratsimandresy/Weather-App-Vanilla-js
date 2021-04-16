@@ -100,7 +100,7 @@ const filterList = (input) => {
   optionsList.forEach((option) => {
     //**targeting the label inside each options */
     let label = option.firstElementChild.nextElementSibling.innerText.toLowerCase();
-    console.log(label);
+    // console.log(label);
     label.indexOf(input) !== -1
       ? (option.style.display = "block")
       : (option.style.display = "none");
@@ -186,11 +186,13 @@ const displayCurrentWeather = async (val) => {
       .catch((err) => console.log(err));
     const { main, weather } = currentInfo;
     const temp = convertToDegree(main["temp"]);
-    const weatherIcon = weather[0]["icon"];
-    console.log(temp, weatherIcon);
+    const { icon, description } = weather[0];
+    const url = getIconURL(icon);
 
     return (currentConditions.innerHTML = `
-    <div class="currentWeatherIcon wi"></div>
+    <div class="currentWeatherIcon wi">
+    <img src=${url} atl=${description}/>
+    </div>
     <div class="temp2">
       <p><span>${temp}</span>°</p>
     </div>
@@ -229,13 +231,17 @@ const displayForecastInfo = async (val) => {
     fiveDaysForecast.slice(0, 3).forEach((d) => {
       const { temp_min, temp_max } = d.main;
       const { dt_txt } = d;
-      const { icon } = d.weather;
-      console.log(icon);
+      const { icon, description } = d.weather[0];
+      // console.log(icon);
+      const url = getIconURL(icon);
+      // console.log(url);
 
       return (
         (days.innerHTML += ` <div>${getDay(dt_txt)}</div>`),
         (forecast.innerHTML += `         <div>
-    <div class="wi"></div>
+    <div class="wi">
+      <img src=${url} atl=${description}/>
+    </div>
     <p><span>${convertToDegree(temp_max)}</span>°</p>
      <p><span>${convertToDegree(temp_min)}</span>°</p>
   </div>`)
