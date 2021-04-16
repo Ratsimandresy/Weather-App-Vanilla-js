@@ -9,6 +9,46 @@ const forecast = document.querySelector(".forecast");
 const days = document.querySelector(".days");
 const optionsList = document.querySelectorAll(".option");
 const searchBox = document.querySelector(".search-box");
+const currentConditions = document.querySelector(".current");
+console.log(temperature);
+const loadingForecast = `
+<div>
+<div class="wi"></div>
+<p>
+  <img src="./image/loading.gif" alt="loading.." />
+</p>
+<p>
+  <img src="./image/loading.gif" alt="loading.." />
+</p>
+</div>
+<div>
+<div class="wi"></div>
+<p>
+  <img src="./image/loading.gif" alt="loading.." />
+</p>
+<p>
+  <img src="./image/loading.gif" alt="loading.." />
+</p>
+</div>
+<div>
+<div class="wi"></div>
+<p>
+  <img src="./image/loading.gif" alt="loading.." />
+</p>
+<p>
+  <img src="./image/loading.gif" alt="loading.." />
+</p>
+</div>
+`;
+
+const loadingCurrent = `
+<div class="currentWeatherIcon wi">
+<img src="./image/loading.gif" alt="loading.." />
+</div>
+<div class="temp">
+<img src="./image/loading.gif" alt="loading.." />
+</div>
+`;
 
 //** ADDING SOME EVENT LISTENER */
 selected.addEventListener("click", () => {
@@ -18,10 +58,15 @@ selected.addEventListener("click", () => {
   if (optionsContainer.classList.contains("active")) {
     searchBox.focus();
     //**resetting the input */
-    forecast.innerHTML = "";
+
+    currentConditions.innerHTML = loadingCurrent;
+    forecast.innerHTML = loadingForecast;
     days.innerHTML = "";
     searchBox.value = "";
     filterList("");
+  } else {
+    forecast.innerHTML = "";
+    // currentConditions.innerHTML = "";
   }
 });
 //**selecting the city  */
@@ -36,9 +81,11 @@ optionsList.forEach((option) => {
 
     optionsContainer.classList.remove("active");
 
-    fetchCurrentWeather(text);
+    // currentConditions.innerHTML = "";
+    forecast.innerHTML = "";
 
-    displayInfo(text);
+    displayForecastInfo(text);
+    displayCurrentWeather(text);
   });
 });
 
@@ -132,25 +179,36 @@ const filterList = (input) => {
 
 //**FETCHING CURRENT WEATHER */
 
-const fetchCurrentWeather = async (val) => {
+const displayCurrentWeather = async (val) => {
   try {
-    const res1 = await fetch(
-      `http://api.openweathermap.org/data/2.5/weather?q=${val}&appid=cafd00df9787dfea7ce7af4c4aa0ddf7`
-    );
-
-    const res2 = await res1
-      .json()
+    const currentInfo = await fetchCurrentWeather(val)
       .then((res) => res)
       .catch((err) => console.log(err));
-    // console.log({ res2 });
+    const { main, weather } = currentInfo;
+    const temp = convertToDegree(main["temp"]);
+    const weatherIcon = weather[0]["icon"];
+    console.log(temp, weatherIcon);
 
-    const temp = convertToDegree(res2["main"]["temp"]);
-    const weatherIcon = res2["weather"][0]["icon"];
-    // const iconURL = `http://openweathermap.org/img/w/${weatherIcon}.png`;
-    // console.log(weatherIcon);
+    return (currentConditions.innerHTML = `
+    <div class="currentWeatherIcon wi"></div>
+    <div class="temp2">
+      <p><span>${temp}</span>°</p>
+    </div>
+    `);
+  } catch (err) {
+    console.log(err);
+  }
+};
 
-    return (temperature.textContent = temp);
-    // (icon.innerHTML = `<img src=${iconURL} alt="weather icon />`)
+const fetchCurrentWeather = async (val) => {
+  try {
+    const info = fetch(
+      `http://api.openweathermap.org/data/2.5/weather?q=${val}&appid=cafd00df9787dfea7ce7af4c4aa0ddf7`
+    )
+      .then((res) => res.json())
+      .catch((err) => console.log(err));
+
+    return info;
   } catch (err) {
     console.log(err);
   }
@@ -158,28 +216,32 @@ const fetchCurrentWeather = async (val) => {
 
 //**FETCHING FORECAST */
 
-const displayInfo = async (val) => {
-  const forecastInfo = await fetchForecastInfo(val)
-    .then((res) => res)
-    .catch((err) => console.log(err));
+const displayForecastInfo = async (val) => {
+  try {
+    const forecastInfo = await fetchForecastInfo(val)
+      .then((res) => res)
+      .catch((err) => console.log(err));
 
-  const { list } = forecastInfo;
+    const { list } = forecastInfo;
 
-  const fiveDaysForecast = list.filter((el) => list.indexOf(el) % 8 == 1);
+    const fiveDaysForecast = list.filter((el) => list.indexOf(el) % 8 == 1);
 
-  fiveDaysForecast.slice(0, 3).forEach((d) => {
-    const { temp_min, temp_max } = d.main;
-    const { dt_txt } = d;
+    fiveDaysForecast.slice(0, 3).forEach((d) => {
+      const { temp_min, temp_max } = d.main;
+      const { dt_txt } = d;
 
-    return (
-      (days.innerHTML += ` <div>${getDay(dt_txt)}</div>`),
-      (forecast.innerHTML += `         <div>
+      return (
+        (days.innerHTML += ` <div>${getDay(dt_txt)}</div>`),
+        (forecast.innerHTML += `         <div>
     <div class="wi"></div>
     <p><span>${convertToDegree(temp_max)}</span>°</p>
      <p><span>${convertToDegree(temp_min)}</span>°</p>
   </div>`)
-    );
-  });
+      );
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const fetchForecastInfo = async (val) => {

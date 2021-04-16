@@ -70,6 +70,10 @@ body {
 .currentWeatherIcon {
   height: 110px;
 }
+.currentWeatherIcon img {
+  height: inherit;
+  width: inherit;
+}
 .days {
   border-radius: 2px;
   display: flex;
@@ -90,6 +94,10 @@ body {
   font-size: 30px;
   margin: 30px 0 20px 0;
 }
+.temp2 {
+  color: white;
+  font-size: 30px;
+}
 .forecast {
   width: 70%;
   display: flex;
@@ -105,7 +113,8 @@ body {
 .forecast p {
   text-align: center;
 }
-.forecast img {
+.forecast img,
+.temp img {
   width: 20px;
   height: 20px;
 }
