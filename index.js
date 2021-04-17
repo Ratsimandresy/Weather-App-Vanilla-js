@@ -191,7 +191,7 @@ const displayCurrentWeather = async (val) => {
 
     return (currentConditions.innerHTML = `
     <div class="currentWeatherIcon wi">
-    <img src=${url} atl=${description}/>
+    <img src=${url} atl=${description} style="width:250px;height:250px;position:absolute;top:-60px;left:-130px;"/>
     </div>
     <div class="temp2">
       <p><span>${temp}</span>°</p>
@@ -240,7 +240,7 @@ const displayForecastInfo = async (val) => {
         (days.innerHTML += ` <div>${getDay(dt_txt)}</div>`),
         (forecast.innerHTML += `         <div>
     <div class="wi">
-      <img src=${url} atl=${description}/>
+      <img src=${url} atl=${description} style="height:40px;width:40px"/>
     </div>
     <p><span>${convertToDegree(temp_max)}</span>°</p>
      <p><span>${convertToDegree(temp_min)}</span>°</p>
