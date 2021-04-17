@@ -58,7 +58,6 @@ selected.addEventListener("click", () => {
   if (optionsContainer.classList.contains("active")) {
     searchBox.focus();
     //**resetting the input */
-
     currentConditions.innerHTML = loadingCurrent;
     forecast.innerHTML = loadingForecast;
     days.innerHTML = "";
@@ -108,29 +107,32 @@ const filterList = (input) => {
 };
 
 //**FETCHING THE DATA */
-// const fetchCities = async () => {
-//   console.log("fetching cities");
-//   try {
-//     const response = await fetch("/fewCities.json");
+const fetchCities = async () => {
+  console.log("FETCHING CITIES NOOOOWWWWWWWW");
+  console.log("fetching cities");
+  try {
+    const response = await fetch("/fewCities.json");
 
-//     let cities = await response
-//       .json()
-//       .then((res) => res)
-//       .catch((err) => console.log(err));
+    let cities = await response
+      .json()
+      .then((res) => res)
+      .catch((err) => console.log(err));
 
-//     cities.forEach((city) => {
-//       const { id, nm } = city;
-//       return (optionsContainer.innerHTML += `
-//     <div class="option">
-// <input type="radio" class="radio" name="city" id=${id} />
-// <label for=${id}>${nm}</label>
-//   </div>
-//     `);
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+    cities.forEach((city) => {
+      const { nm } = city;
+      return (optionsContainer.innerHTML += `
+    <div class="option">
+<input type="radio" class="radio" name="city" id=${nm} />
+<label for=${nm}>${nm}</label>
+  </div>
+    `);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+document.addEventListener("DOMContentLoaded", fetchCities);
 
 //**!---------TEsT------------ */
 

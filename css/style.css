@@ -148,14 +148,14 @@ body {
   position: absolute;
   top: 60%;
   order: 1;
-  z-index: 10;
+  z-index: 2;
 }
 
 .select-box .options-container.active {
   max-height: 200px;
   opacity: 1;
   overflow-y: scroll;
-  margin-top: 9px;
+  margin-top: 11px;
 }
 
 .select-box .options-container::-webkit-scrollbar {
