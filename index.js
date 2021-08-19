@@ -1,6 +1,6 @@
-// import tracer from "dd-trace";
-// tracer.init();
+// import { convertToDegree, getDay, getIconURL } from "./src/Utils";
 
+// console.log(convertToDegree);
 //** SELECTING ALL THE ELEMENT NEEDED */
 const selected = document.querySelector(".selected");
 const optionsContainer = document.querySelector(".options-container");
