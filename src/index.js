@@ -1,18 +1,25 @@
-// import { convertToDegree, getDay, getIconURL } from "./src/Utils";
+import test, {
+  secondTest,
+  getDay,
+  getIconURL,
+  convertToDegree,
+} from "./Utils.js";
 
-// console.log(convertToDegree);
+console.log(test());
+console.log(secondTest());
+
 //** SELECTING ALL THE ELEMENT NEEDED */
 const selected = document.querySelector(".selected");
 const optionsContainer = document.querySelector(".options-container");
 const selectedText = document.querySelector(".selected-text");
 const City = document.querySelector(".city");
-const temperature = document.querySelector(".temp span");
-const icon = document.querySelector(".currentWeatherIcon");
 const forecast = document.querySelector(".forecast");
 const days = document.querySelector(".days");
 const searchBox = document.querySelector(".search-box");
 const currentConditions = document.querySelector(".current");
 const frag = document.createDocumentFragment();
+// const temperature = document.querySelector(".temp span");
+// const icon = document.querySelector(".currentWeatherIcon");
 let optionsList;
 
 const loadingForecast = `
@@ -247,32 +254,4 @@ const filterList = (input) => {
       ? (option.style.display = "block")
       : (option.style.display = "none");
   });
-};
-
-//** kelvin to degree */
-const convertToDegree = (t) => {
-  const result = Math.round(t - 273.15);
-  return result;
-};
-
-//**get day by name */
-const getDay = (day) => {
-  let d = new Date(day);
-  var weekday = new Array(7);
-  weekday[0] = "Sun";
-  weekday[1] = "Mon";
-  weekday[2] = "Tue";
-  weekday[3] = "Wed";
-  weekday[4] = "Thu";
-  weekday[5] = "Fri";
-  weekday[6] = "Sat";
-
-  var n = weekday[d.getDay()];
-  return n;
-};
-
-//**generate weather icons */
-const getIconURL = (code) => {
-  let URL = `http://openweathermap.org/img/wn/${code}@2x.png`;
-  return URL;
 };

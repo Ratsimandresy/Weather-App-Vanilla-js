@@ -25,3 +25,13 @@ export const getIconURL = (code) => {
   let URL = `http://openweathermap.org/img/wn/${code}@2x.png`;
   return URL;
 };
+
+const testFunction = () => {
+  return "testing is going through";
+};
+
+export const secondTest = () => {
+  return "second test here";
+};
+
+export default testFunction;
