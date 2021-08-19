@@ -10,7 +10,20 @@
     />
     <link rel="stylesheet" href="./css/style.css" />
     <link rel="stylesheet" href="css/weathericons.css" />
-    <script src="index.js" type="module" />
+    <script
+      type="text/javascript"
+      src="https://www.datadoghq-browser-agent.com/datadog-logs.js"
+    ></script>
+    <script>
+      window.DD_LOGS &&
+        DD_LOGS.init({
+          clientToken: "pub2b838c0558d352c79eaba612e3fb50aa",
+          site: "datadoghq.eu",
+          forwardErrorsToLogs: true,
+          sampleRate: 100,
+        });
+    </script>
+    <script src="index.js" type="module"></script>
   </head>
 
   <body>
@@ -20,68 +33,10 @@
           <div class="label">Sélectionner votre ville</div>
           <div class="container">
             <div class="select-box">
-              <div class="options-container">
-                <div class="option">
-                  <input type="radio" class="radio" name="city" id="Paris" />
-                  <label for="Paris">Paris</label>
-                </div>
-                <div class="option">
-                  <input type="radio" class="radio" name="city" id="Toulouse" />
-                  <label for="Toulouse">Toulouse</label>
-                </div>
-                <div class="option">
-                  <input type="radio" class="radio" name="city" id="Amiens" />
-                  <label for="Amiens">Amiens</label>
-                </div>
-                <div class="option">
-                  <input type="radio" class="radio" name="city" id="Lille" />
-                  <label for="Lille">Lille</label>
-                </div>
-                <div class="option">
-                  <input
-                    type="radio"
-                    class="radio"
-                    name="city"
-                    id="Montrouge"
-                  />
-                  <label for="Montrouge">Montrouge</label>
-                </div>
-                <div class="option">
-                  <input type="radio" class="radio" name="city" id="Bordeaux" />
-                  <label for="Bordeaux">Bordeaux</label>
-                </div>
-                <div class="option">
-                  <input
-                    type="radio"
-                    class="radio"
-                    name="city"
-                    id="Marseille"
-                  />
-                  <label for="Marseille">Marseille</label>
-                </div>
-                <div class="option">
-                  <input
-                    type="radio"
-                    class="radio"
-                    name="city"
-                    id="Strasbourg"
-                  />
-                  <label for="Strasbourg">Strasbourg</label>
-                </div>
-                <div class="option">
-                  <input type="radio" class="radio" name="city" id="Nantes" />
-                  <label for="Nantes">Nantes</label>
-                </div>
-                <div class="option">
-                  <input type="radio" class="radio" name="city" id="Arcueil" />
-                  <label for="Arcueil">Arcueil</label>
-                </div>
-                <div class="option">
-                  <input type="radio" class="radio" name="city" id="Nice" />
-                  <label for="Nice">Nice</label>
-                </div>
-              </div>
+              <!-- dropdown container  -->
+              <div class="options-container"></div>
 
+              <!--selecting field,  dropdown for all the cities, using flex order one property  -->
               <div class="selected">
                 <p class="selected-text">Cliquez ici..</p>
                 <p>
@@ -101,14 +56,18 @@
                   </svg>
                 </p>
               </div>
+
+              <!-- input for searching city's name  -->
               <div class="search-box">
                 <input type="text" placeholder="Entrez le nom de la ville..." />
               </div>
             </div>
           </div>
 
+          <!-- city -->
           <div class="city">city</div>
 
+          <!-- current weather informations -->
           <div class="current">
             <div class="currentWeatherIcon wi"></div>
             <div class="temp">
@@ -116,8 +75,10 @@
             </div>
           </div>
 
+          <!-- 3 days name forecast  -->
           <div class="days"></div>
 
+          <!-- icons and temperature max adn min  -->
           <div class="forecast"></div>
         </div>
       </div>

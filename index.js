@@ -1,3 +1,6 @@
+// import tracer from "dd-trace";
+// tracer.init();
+
 //** SELECTING ALL THE ELEMENT NEEDED */
 const selected = document.querySelector(".selected");
 const optionsContainer = document.querySelector(".options-container");
@@ -7,10 +10,11 @@ const temperature = document.querySelector(".temp span");
 const icon = document.querySelector(".currentWeatherIcon");
 const forecast = document.querySelector(".forecast");
 const days = document.querySelector(".days");
-const optionsList = document.querySelectorAll(".option");
 const searchBox = document.querySelector(".search-box");
 const currentConditions = document.querySelector(".current");
-console.log(temperature);
+const frag = document.createDocumentFragment();
+let optionsList;
+
 const loadingForecast = `
 <div>
 <div class="wi"></div>
@@ -52,7 +56,6 @@ const loadingCurrent = `
 
 //** ADDING SOME EVENT LISTENER */
 selected.addEventListener("click", () => {
-  // fetchCities();
   optionsContainer.classList.toggle("active");
   //**allow the user to access immediately the input type field */
   if (optionsContainer.classList.contains("active")) {
@@ -62,125 +65,83 @@ selected.addEventListener("click", () => {
     forecast.innerHTML = loadingForecast;
     days.innerHTML = "";
     searchBox.value = "";
-    filterList("");
-  } else {
-    forecast.innerHTML = "";
-    // currentConditions.innerHTML = "";
   }
 });
-//**selecting the city  */
 
-optionsList.forEach((option) => {
-  console.log("before clicking");
-  option.firstElementChild.addEventListener("click", async () => {
-    console.log("INPUT CLICKED");
-    const text = option.querySelector("label").textContent;
-    selectedText.textContent = text;
-    City.textContent = text;
+//**DISPLAYING THE CITIES */
+const displayCities = (arr) => {
+  arr.forEach((el) => {
+    const { id, nm } = el;
+    const option = document.createElement("div");
+    const input = document.createElement("input");
+    const label = document.createElement("label");
 
-    optionsContainer.classList.remove("active");
+    option.appendChild(input);
+    option.appendChild(label);
+    option.setAttribute("class", "option");
+    label.setAttribute("for", `${id}`);
+    input.classList.add("radio");
+    Object.assign(input, {
+      type: "radio",
+      name: `${nm}`,
+      id: `${id}`,
+    });
 
-    // currentConditions.innerHTML = "";
-    forecast.innerHTML = "";
-
-    displayForecastInfo(text);
-    displayCurrentWeather(text);
+    label.textContent = `${nm}`;
+    frag.appendChild(option); //**! perforamance, kind of virtual DOM when manipulating multiple DOM element like list li etc... */
+    optionsContainer.appendChild(frag);
+    optionsList = document.querySelectorAll(".option"); //**! i spent al lot of time here, it was always empty , defined outside the function */
   });
-});
-
-//**FILTERING INPUT */
-searchBox.addEventListener("keyup", (event) => {
-  filterList(event.target.value);
-});
-
-//**this function is going to filter for each character typed, to lower case making ot case insensitive */
-const filterList = (input) => {
-  input = input.toLowerCase();
+  //**selecting the city  */
   optionsList.forEach((option) => {
-    //**targeting the label inside each options */
-    let label = option.firstElementChild.nextElementSibling.innerText.toLowerCase();
-    // console.log(label);
-    label.indexOf(input) !== -1
-      ? (option.style.display = "block")
-      : (option.style.display = "none");
+    option.firstElementChild.addEventListener("click", async () => {
+      const text = option.querySelector("label").textContent; //**! event bubblingn-, fetch() called twice, needed to target the right DOM element */
+      selectedText.textContent = text;
+      City.textContent = text;
+      optionsContainer.classList.remove("active");
+      forecast.innerHTML = "";
+
+      displayForecastInfo(text);
+      displayCurrentWeather(text);
+    });
   });
 };
 
-//**FETCHING THE DATA */
-const fetchCities = async () => {
-  console.log("FETCHING CITIES NOOOOWWWWWWWW");
-  console.log("fetching cities");
+//**DISPLAYING FORECAST */
+const displayForecastInfo = async (val) => {
   try {
-    const response = await fetch("/fewCities.json");
-
-    let cities = await response
-      .json()
+    const forecastInfo = await fetchForecastInfo(val)
       .then((res) => res)
       .catch((err) => console.log(err));
+    const { list } = forecastInfo;
+    //**getting the the 5 days forecast*/
+    const fiveDaysForecast = list.filter((el) => list.indexOf(el) % 8 == 1);
 
-    cities.forEach((city) => {
-      const { nm } = city;
-      return (optionsContainer.innerHTML += `
-    <div class="option">
-<input type="radio" class="radio" name="city" id=${nm} />
-<label for=${nm}>${nm}</label>
-  </div>
-    `);
+    //**getting the next 3 days */
+    fiveDaysForecast.slice(0, 3).forEach((d) => {
+      console.log("forecast info");
+      const { temp_min, temp_max } = d.main;
+      const { dt_txt } = d;
+      const { icon, description } = d.weather[0];
+      const url = getIconURL(icon);
+
+      return (
+        (days.innerHTML += ` <div>${getDay(dt_txt)}</div>`),
+        (forecast.innerHTML += `         <div>
+    <div class="wi">
+      <img src=${url} atl=${description} style="height:40px;width:40px"/>
+    </div>
+    <p><span>${convertToDegree(temp_max)}</span>°</p>
+     <p><span>${convertToDegree(temp_min)}</span>°</p>
+  </div>`)
+      );
     });
   } catch (error) {
     console.log(error);
   }
 };
 
-document.addEventListener("DOMContentLoaded", fetchCities);
-
-//**!---------TEsT------------ */
-
-// let cities = [];
-
-// const fetchCities = () => {
-//   fetch("/fewCities.json")
-//     .then((res) => {
-//       res.json().then((res) => {
-//         cities = res;
-//         // console.log({ cities });
-//         showCities(cities);
-//       });
-//     })
-//     .catch((err) => console.log(err));
-// };
-
-// fetchCities();
-// document.addEventListener("DOMContentLoaded", fetchCities);
-
-// const showCities = (arr) => {
-//   let output = "";
-
-//   arr.forEach(({ id, nm }) => {
-//     output += `
-//       <div class="option">
-//               <input type="radio" class="radio" name="city" id=${id} />
-//                <label for=${id}>${nm}</label>
-//     </div>
-//       `;
-//   });
-//   optionsContainer.innerHTML = output;
-// };
-
-// searchBox.addEventListener("input", (e) => {
-//   const el = e.target.value.toLowerCase();
-//   console.log(cities);
-//   let newCity = cities.filter((city) => {
-//     city.nm.toLowerCase().includes(el);
-//   });
-//   console.log(newCity);
-//   showCities(newCity);
-// });
-
-//**!---------TEsT------------ */
-
-//**FETCHING CURRENT WEATHER */
-
+//**DISPLAYING CURRENT WEATHER */
 const displayCurrentWeather = async (val) => {
   try {
     const currentInfo = await fetchCurrentWeather(val)
@@ -204,6 +165,44 @@ const displayCurrentWeather = async (val) => {
   }
 };
 
+//**FETCHING THE CITIES */
+const fetchCities = async () => {
+  try {
+    const response = await fetch("./data/cities-fr.json");
+    //**    const response = await fetch("./data/fewCities.json"); // testing purpose
+    if (response.ok) {
+      const cities = await response
+        .json()
+        .then((res) => res)
+        .catch((err) => console.log(err));
+      console.log(cities);
+      displayCities(cities);
+
+      //**FILTERING INPUT */
+      searchBox.addEventListener("keyup", (event) => {
+        filterList(event.target.value);
+      });
+
+      //**this function is going to filter for each character typed, to lower case making ot case insensitive */
+      const filterList = (input) => {
+        input = input.toLowerCase();
+        optionsList.forEach((option) => {
+          //**targeting the label inside each options */
+          let label =
+            option.firstElementChild.nextElementSibling.innerText.toLowerCase();
+          label.indexOf(input) !== -1
+            ? (option.style.display = "block")
+            : (option.style.display = "none");
+        });
+      };
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+fetchCities();
+
+//**FETCHING CURRENT WEATHER */
 const fetchCurrentWeather = async (val) => {
   try {
     const info = fetch(
@@ -211,7 +210,6 @@ const fetchCurrentWeather = async (val) => {
     )
       .then((res) => res.json())
       .catch((err) => console.log(err));
-
     return info;
   } catch (err) {
     console.log(err);
@@ -219,41 +217,6 @@ const fetchCurrentWeather = async (val) => {
 };
 
 //**FETCHING FORECAST */
-
-const displayForecastInfo = async (val) => {
-  try {
-    const forecastInfo = await fetchForecastInfo(val)
-      .then((res) => res)
-      .catch((err) => console.log(err));
-
-    const { list } = forecastInfo;
-
-    const fiveDaysForecast = list.filter((el) => list.indexOf(el) % 8 == 1);
-    console.log(fiveDaysForecast);
-    fiveDaysForecast.slice(0, 3).forEach((d) => {
-      const { temp_min, temp_max } = d.main;
-      const { dt_txt } = d;
-      const { icon, description } = d.weather[0];
-      // console.log(icon);
-      const url = getIconURL(icon);
-      // console.log(url);
-
-      return (
-        (days.innerHTML += ` <div>${getDay(dt_txt)}</div>`),
-        (forecast.innerHTML += `         <div>
-    <div class="wi">
-      <img src=${url} atl=${description} style="height:40px;width:40px"/>
-    </div>
-    <p><span>${convertToDegree(temp_max)}</span>°</p>
-     <p><span>${convertToDegree(temp_min)}</span>°</p>
-  </div>`)
-      );
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const fetchForecastInfo = async (val) => {
   try {
     const info = fetch(
@@ -261,11 +224,29 @@ const fetchForecastInfo = async (val) => {
     )
       .then((res) => res.json())
       .catch((err) => console.log(err));
-
     return info;
   } catch (err) {
     console.log(err);
   }
+};
+
+//**FILTERING INPUT */
+searchBox.addEventListener("keyup", (event) => {
+  filterList(event.target.value);
+});
+
+//**this function is going to filter for each character typed, to lower case making ot case insensitive */
+const filterList = (input) => {
+  input = input.toLowerCase();
+  optionsList.forEach((option) => {
+    //**targeting the label inside each options */
+    let label =
+      option.firstElementChild.nextElementSibling.innerText.toLowerCase();
+    // console.log(label);
+    label.indexOf(input) !== -1
+      ? (option.style.display = "block")
+      : (option.style.display = "none");
+  });
 };
 
 //** kelvin to degree */
@@ -295,19 +276,3 @@ const getIconURL = (code) => {
   let URL = `http://openweathermap.org/img/wn/${code}@2x.png`;
   return URL;
 };
-
-//**CACHE  */
-
-function loadCached(url) {
-  let cache = loadCached.cache || (loadCached.cache = new Map());
-  let promise;
-
-  if (cache.has(url)) {
-    promise = cache.get(url);
-  } else {
-    promise = fetch(url);
-    cache.set(url, promise);
-  }
-
-  return promise.then((response) => response.text());
-}
